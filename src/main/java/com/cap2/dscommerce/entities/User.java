@@ -6,34 +6,36 @@ import java.security.PrivilegedExceptionAction;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "tb_user")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+
     @Column(unique = true)
     private String email;
     private String phone;
-    private LocalDate birthDay;
+    private LocalDate birthDate;
+    private String password;
+
     @OneToMany(mappedBy = "client")
     private List<Order> orders = new ArrayList<>();
 
     public User() {
     }
 
-    public User(Long id, String name, String email, String phone, LocalDate birthDay) {
+    public User(Long id, String name, String email, String phone, LocalDate birthDate, String password) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.phone = phone;
-        this.birthDay = birthDay;
-    }
-
-    public List<Order> getOrders() {
-        return orders;
+        this.birthDate = birthDate;
+        this.password = password;
     }
 
     public Long getId() {
@@ -68,22 +70,38 @@ public class User {
         this.phone = phone;
     }
 
-    public LocalDate getBirthDay() {
-        return birthDay;
+    public LocalDate getBirthDate() {
+        return birthDate;
     }
 
-    public void setBirthDay(LocalDate birthDay) {
-        this.birthDay = birthDay;
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
     }
 
     @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", birthDay=" + birthDay +
-                '}';
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }
