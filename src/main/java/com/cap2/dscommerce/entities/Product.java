@@ -11,6 +11,7 @@ import java.util.Set;
 @Table(name = "tb_product")
 public class Product {
 
+    //---------Atributos--------------------------------------------
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,7 +21,7 @@ public class Product {
     private String description;
     private Double price;
     private String imgUrl;
-
+//---------Atributos--------------------------------------------
     @ManyToMany
     @JoinTable(name = "tb_product_category",
             joinColumns = @JoinColumn(name = "product_id"),
@@ -107,4 +108,6 @@ public class Product {
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
     }
+
+
 }
