@@ -3,12 +3,15 @@ package com.cap2.dscommerce.services;
 import com.cap2.dscommerce.dto.ProductDTO;
 import com.cap2.dscommerce.entities.Product;
 import com.cap2.dscommerce.repositories.ProductRepository;
+import com.cap2.dscommerce.services.exceptions.DatabaseException;
 import com.cap2.dscommerce.services.exceptions.ResurceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -62,13 +65,20 @@ public class ProductService {
             entity = repository.save(entity);
             return new ProductDTO(entity);
         } catch (EntityNotFoundException e) {
-            throw new EntityNotFoundException("Recurso não encontrado");
+            throw new ResurceNotFoundException ("Recurso não encontrado");
         }
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void delete(Long id) {
-        repository.deleteById(id);
+        if(!repository.existsById(id)){
+            throw new ResurceNotFoundException("Recurso não encotrado");
+        }
+        try {
+            repository.deleteById(id);
+        } catch (DataIntegrityViolationException e){
+            throw new DatabaseException("Falha de integridade referêncial!");
+        }
     }
 
     private void copyDtoToEntity(ProductDTO dto, Product entity) {
@@ -77,5 +87,4 @@ public class ProductService {
         entity.setPrice(dto.getPrice());
         entity.setImgUrl(dto.getImgUrl());
     }
-
 }
